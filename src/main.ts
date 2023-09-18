@@ -6,6 +6,8 @@ import { IonicVue } from '@ionic/vue';
 
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
+import './registerServiceWorker';
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
 
