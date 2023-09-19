@@ -1,5 +1,8 @@
 <template>
   <ion-page>
+    <ion-header :translucent="true">
+      <HeaderComponent :username="username" @levelChanged="onLevelChanged" />
+    </ion-header>
     <ion-content :fullscreen="true">
       <div class="additional-info">
         <h3>Tiempo: {{ timeLeft }}</h3>
@@ -18,9 +21,11 @@
 </template>
 
 <script setup lang="ts">
-import { IonContent, IonPage } from '@ionic/vue';
+import { IonContent, IonPage, IonHeader } from '@ionic/vue';
 import { ref } from "vue";
 import Matrix from "@/components/MatrixComponent.vue"
+import HeaderComponent from "@/components/HeaderComponent.vue"
+import { Preferences } from '@capacitor/preferences';
 import { useRouter } from 'vue-router';
 import levels from '@/assets/levels.json';
 import { Level } from '@/interfaces/interfaces.ts';
@@ -57,7 +62,7 @@ const restart = (addPoints: number = 0) => {
   userSelection.value = -1;
   askNumber.value = generateRandomNumber();
   matrixValues = refreshRandomArray();
-  points.value = addPoints;
+  points.value = addPoints > 0 ? points.value + addPoints : 0;
 }
 
 const handleSelection = (cell: number) => {
@@ -74,6 +79,24 @@ const handleSelection = (cell: number) => {
   }
 }
 
+const onLevelChanged = (selectedEvent: Level) => {
+  selectedLevel = selectedEvent;
+  if (timeLeft.value > selectedLevel.time) {
+    timeLeft.value = selectedLevel.time;
+  }
+}
+
+const checkName = async () => {
+  const userUrl = window.location.href.split("/").pop();
+  const { value: userLogged } = await Preferences.get({ key: 'username' });
+  if (userUrl !== userLogged) {
+    router?.push({ name: 'Home' });
+  } else {
+    username.value = userLogged || '';
+  }
+}
+
+checkName();
 refreshRandomArray();
 
 setInterval(() => {

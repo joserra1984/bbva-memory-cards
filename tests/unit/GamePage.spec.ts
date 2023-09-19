@@ -40,4 +40,28 @@ describe('GamePage.vue', () => {
         expect(wrapper.vm.timeLeft).toBe(wrapper.vm.selectedLevel.time);
         expect(wrapper.vm.userSelection).toBe(-1);
     });
+
+
+    describe('onLevelChanged function', () => {
+        const onLevelChanged = wrapper.vm.onLevelChanged
+        let selectedLevel: Level;
+
+        beforeEach(() => {
+            selectedLevel = { time: 60 };
+        });
+
+        it('should update timeLeft.value if timeLeft is greater than the new level time', async () => {
+            const newLevel: Level = { time: 45 };
+            wrapper.vm.timeLeft = 70;
+            onLevelChanged(newLevel);
+            expect(wrapper.vm.timeLeft).toBe(newLevel.time);
+        });
+
+        it('should not update timeLeft.value if timeLeft is less than or equal to the new level time', () => {
+            const newLevel: Level = { time: 75 };
+            wrapper.vm.timeLeft = newLevel.time;
+            onLevelChanged(newLevel);
+            expect(wrapper.vm.timeLeft).toBe(newLevel.time);
+        });
+    });
 });
