@@ -1,0 +1,17 @@
+[
+    {
+      "label": "Bajo",
+      "time": 10,
+      "points": 10
+    },
+    {
+      "label": "Medio",
+      "time": 5,
+      "points": 20
+    },
+    {
+      "label": "Alto",
+      "time": 2,
+      "points": 30
+    }
+  ]
