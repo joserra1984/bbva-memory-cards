@@ -12,6 +12,7 @@ For testing, we have opted for the Vitest library, which is designed specificall
 
 ## Hosting
 To host this Progressive Web App (PWA), we have selected Firebase. You can check the technical documentation at [the official Ionic website](https://ionicframework.com/docs/vue/pwa). As a result, you will get a Firebase hosting service and an automated integration for each time the repository is updated on GitHub. You can access the hosted application at the following URL:
+
 [https://bbva-memory-cards.web.app](https://bbva-memory-cards.web.app)
 
 ## Instructions for Downloading and Running the Application on your Local Environment
