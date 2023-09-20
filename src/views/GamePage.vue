@@ -9,10 +9,18 @@
         <h3>Puntos: {{ points }}</h3>
       </div>
       <div id="container">
+        <h2 class="number-of-questions" v-if="timeLeft > 0">Complejidad:
+          <select v-model="numbersToAsk" @change="calculateAskNumbers" id="numbersToAsk" class="numbersToAsk-select">
+            <option v-for="eachLevel in [1,3]" :value="eachLevel">
+              {{ eachLevel  }}
+            </option>
+          </select>
+        </h2>
         <div class="game-content">
-          <h3>{{ timeLeft > 0 ? 'Memorice las posiciones' : '¿Donde está el ' + askNumber + '?' }}</h3>
+          <h3  v-if="timeLeft > 0">{{ timeLeft > 0 ? 'Memorice las posiciones' : '¿Donde está el ' + askNumbers + '?' }}</h3>
+          <h3 v-else>{{'¿Donde está el ' +  askNumbers + '?'}}</h3>        
           <matrix :show="timeLeft > 0" :selected="userSelection" :matrix="matrixValues"
-            :correct="userSelection === askNumber" @select="handleSelection" />
+            :correct="userSelection.every((sel)=>askNumbers.includes(sel))" @select="handleSelection" />
           <button @click="restart()" class="play-button">Reiniciar</button>
         </div>
       </div>
@@ -38,15 +46,15 @@ const generateRandomNumber = () => {
 
 let timeLeft = ref(levels[0].time);
 let points = ref(0);
-let askNumber = ref(generateRandomNumber());
-let userSelection = ref(-1);
+let userSelection = ref([] as number[]);
 let selectedLevel: Level = levels[0];
 let death = ref(false);
 let username = ref('');
+let numbersToAsk = 1;
 
-const refreshRandomArray = () => {
+const generateRandomArray = (length:number) => {
   let resultArray: Array<number> = []
-  while (resultArray.length < 9) {
+  while (resultArray.length < length) {
     const number = generateRandomNumber();
     if (!resultArray.includes(number)) {
       resultArray.push(number);
@@ -54,24 +62,32 @@ const refreshRandomArray = () => {
   }
   return resultArray;
 }
-let matrixValues: number[] = refreshRandomArray();
+let askNumbers = ref(generateRandomArray(numbersToAsk));
+
+const calculateAskNumbers = () => {
+  askNumbers.value = generateRandomArray(numbersToAsk);
+}
+
+let matrixValues: number[] = generateRandomArray(9);
 
 const restart = (addPoints: number = 0) => {
   death.value = false;
   timeLeft.value = selectedLevel.time;
-  userSelection.value = -1;
-  askNumber.value = generateRandomNumber();
-  matrixValues = refreshRandomArray();
+  userSelection.value = [];
+  calculateAskNumbers();
+  matrixValues = generateRandomArray(9);
   points.value = addPoints > 0 ? points.value + addPoints : 0;
 }
 
-const handleSelection = (cell: number) => {
-  if (!death.value && timeLeft.value === 0) {
-    userSelection.value = cell;
-    if (askNumber.value === userSelection.value) {
-      setTimeout(() => {
+const handleSelection = (cell:number) => {
+  if (!death.value && timeLeft.value === 0 && userSelection.value.length < numbersToAsk) {
+    userSelection.value.push(cell);
+    if (askNumbers.value.includes(cell)) {
+      if(userSelection.value.length == numbersToAsk){
+        setTimeout(() => {
         restart(selectedLevel.points);
-      }, 2000);
+      }, 1000);
+      }
     } else {
       death.value = true;
       navigator?.vibrate?.(500);
@@ -88,22 +104,25 @@ const onLevelChanged = (selectedEvent: Level) => {
 
 const checkName = async () => {
   const userUrl = window.location.href.split("/").pop();
-  const { value: userLogged } = await Preferences.get({ key: 'username' });
+  const { value: userLogged } = await Preferences.get({ key: 'username' });  
   if (userUrl !== userLogged) {
     router?.push({ name: 'Home' });
   } else {
     username.value = userLogged || '';
-  }
+  }  
 }
 
-checkName();
-refreshRandomArray();
+setTimeout(() => {
+  checkName();  
+}, 1000);
 
-setInterval(() => {
+generateRandomArray(9);
+  setInterval(() => {
   if (timeLeft.value > 0) {
     timeLeft.value--;
   }
 }, 1000);
+
 
 </script>
     
@@ -122,6 +141,13 @@ setInterval(() => {
 
 .game-content {
   min-width: 250px;
+}
+
+@media screen and (max-height: 320px) {
+  #container {
+    top: 50px;
+    transform: none;
+  }
 }
 
 .play-button {
@@ -143,5 +169,20 @@ setInterval(() => {
   bottom: 0;
   position: absolute;
   width: 100%;
+}
+
+select {
+  padding: 6px;
+  border: none;
+  background-color: #fff;
+  color: #004481;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+.number-of-questions {
+  position: absolute;
+  bottom: -50px;
+  line-height: 20px;;
 }
 </style>

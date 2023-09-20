@@ -7,7 +7,7 @@ describe('MatrixComponent', () => {
     const wrapper = mount(MatrixComponent, {
       props: {
         show: false,
-        selected: 1,
+        selected: [1],
         matrix: [1, 2, 3],
         correct: true,
       },

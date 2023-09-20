@@ -9,7 +9,7 @@ const wrapper = mount(HomePage);
 const restartCommon = (wrapper) => {
     expect(wrapper.vm.death).toBe(false);
     expect(wrapper.vm.timeLeft).toBe(wrapper.vm.selectedLevel.time);
-    expect(wrapper.vm.userSelection).toBe(-1);
+    expect(wrapper.vm.userSelection).toStrictEqual([]);
 }
 
 describe('GamePage.vue', () => {
@@ -20,7 +20,7 @@ describe('GamePage.vue', () => {
         expect(wrapper.vm.generateRandomNumber()).above(0).and.below(10);
     });
     it('Testing refreshRandomArray method', () => {
-        const result = wrapper.vm.refreshRandomArray()
+        const result = wrapper.vm.generateRandomArray(9)
         expect(result).toHaveLength(9);
         const uniqueValues = new Set(result);
         expect(uniqueValues.size).toBe(result.length);
@@ -38,7 +38,7 @@ describe('GamePage.vue', () => {
         wrapper.vm.handleSelection(wrapper.vm.userSelection);
         expect(wrapper.vm.points - oldPoints === wrapper.vm.selectedLevel.points);
         expect(wrapper.vm.timeLeft).toBe(wrapper.vm.selectedLevel.time);
-        expect(wrapper.vm.userSelection).toBe(-1);
+        expect(wrapper.vm.userSelection).toStrictEqual([]);
     });
 
 

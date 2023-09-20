@@ -2,10 +2,10 @@
     <div class="matrix">
         <div :class="{
             'card': true,
-            'loss': props.correct === false && props.selected === cell,
-            'win': props.correct === true && props.selected === cell,
+            'loss': props.correct === false && props.selected?.includes(cell),
+            'win': props.correct === true && props.selected?.includes(cell),
         }" @click="$emit('select', cell)" v-for="(cell) in props.matrix">
-            {{ props.show || props.selected === cell ? cell : '?' }}
+            {{ props.show || props.selected?.includes(cell) ? cell : '?' }}
         </div>
     </div>
 </template>
@@ -13,8 +13,8 @@
 <script setup lang="ts">
 const props = defineProps({
     show: Boolean,
-    selected: Number,
-    matrix: Array,
+    selected: Array<number>,
+    matrix: Array<number>,
     correct: Boolean
 });      
 </script>
@@ -47,16 +47,17 @@ const props = defineProps({
     background-color: #00ff00;
 }
 
-@media screen and (max-height: 420px) {
+@media screen and (max-height: 520px) {
     .matrix {
         display: flex;
-        width: 95vw;
+        width: 100vw;
         flex-wrap: wrap;
-        justify-content: space-around;
+        justify-content: space-evenly;    
     }
 
     .card {
-        padding: 15px 20px;
+        padding: 15px;
+        min-width: 8%;
     }
 }
 </style>
